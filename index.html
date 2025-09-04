@@ -1,22 +1,236 @@
-<!-- Replace your script with this updated version -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE TERMUX SIMULATOR</title>
+    <title>CYBER TERMINAL SIMULATOR</title>
     <style>
-        /* SAME STYLES AS YOUR CODE ABOVE (unchanged) */
-        /* I only edited menu buttons part */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background: #000;
+            color: #0f0;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 20, 0, 0.95);
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+            border: 1px solid #0f0;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+        
+        .header {
+            background: #001100;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #0f0;
+        }
+        
+        .title {
+            font-weight: bold;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+            font-size: 18px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .close { background: #ff5f56; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #27c93f; }
+        
+        .terminal-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .menu {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #0f0;
+            flex-wrap: wrap;
+            background: rgba(0, 30, 0, 0.8);
+        }
+        
+        .menu-btn {
+            background: transparent;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .menu-btn:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 10px #0f0;
+        }
+        
+        .terminal {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .input-container {
+            padding: 10px 15px;
+            background: rgba(0, 30, 0, 0.8);
+            border-top: 1px solid #0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .prompt {
+            color: #0f0;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .input {
+            background: transparent;
+            border: none;
+            color: #0f0;
+            font-size: 14px;
+            flex: 1;
+            outline: none;
+            padding: 5px;
+        }
+        
+        .output {
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.15;
+        }
+        
+        .glow {
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        .error { color: #f55; }
+        .success { color: #5f5; }
+        .warning { color: #ff5; }
+        .info { color: #55f; }
+        .special { color: #f5f; }
+        .cyber { color: #0ff; }
+        
+        .hacker-text {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #0f0, #0a0, #0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 5px #0f0; }
+            50% { text-shadow: 0 0 20px #0f0, 0 0 30px #0f0; }
+        }
+        
+        .ascii-art {
+            color: #0f0;
+            font-family: monospace;
+            white-space: pre;
+            font-size: 8px;
+            line-height: 1;
+            margin: 10px 0;
+        }
+        
+        /* Cyber enhancements */
+        .cyber-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .scan-line {
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(to right, transparent, #0f0, transparent);
+            top: 30%;
+            opacity: 0.7;
+            animation: scan 3s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+        
+        /* Matrix characters */
+        .matrix-char {
+            position: absolute;
+            color: #0f0;
+            font-family: monospace;
+            z-index: 0;
+            opacity: 0.7;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
+    <div class="cyber-grid"></div>
+    <div class="scan-line"></div>
     <canvas class="matrix-bg" id="matrixCanvas"></canvas>
-    <canvas class="particles" id="particleCanvas"></canvas>
     
     <div class="container">
         <div class="header">
-            <div class="title hacker-text">ULTIMATE TERMUX SIMULATOR v2.1</div>
+            <div class="title hacker-text">CYBERDINE TERMINAL v3.0</div>
             <div class="controls">
                 <div class="control-btn close" onclick="closeTerminal()"></div>
                 <div class="control-btn minimize" onclick="minimizeTerminal()"></div>
@@ -28,29 +242,84 @@
             <div class="menu">
                 <button class="menu-btn" onclick="runMatrix()">Matrix</button>
                 <button class="menu-btn" onclick="runHack()">Hack Mode</button>
-                <button class="menu-btn" onclick="funMode()">Fun Mode 🎮</button>
-                <button class="menu-btn" onclick="cryptoWatch()">Crypto Watch</button>
-                <button class="menu-btn" onclick="networkScan()">Network Scan</button>
+                <button class="menu-btn" onclick="quantumCrypt()">Quantum Crypt</button>
+                <button class="menu-btn" onclick="aiSimulation()">AI Simulation</button>
+                <button class="menu-btn" onclick="cyberAttack()">Cyber Attack</button>
                 <button class="menu-btn" onclick="clearTerminal()">Clear</button>
             </div>
             
             <div class="terminal" id="terminal">
-                <div class="output success">Welcome to ULTIMATE TERMUX SIMULATOR</div>
+                <div class="output success">INITIALIZING CYBERDINE TERMINAL...</div>
                 <div class="output info">Type 'help' to see available commands</div>
-                <div class="output warning">This is a simulation running in your browser</div>
+                <div class="output cyber">WARNING: This terminal contains classified protocols</div>
+                <div class="ascii-art">
+   ______                  __           __
+  / ____/___  __  ______  / /____  ____/ /
+ / /   / __ \/ / / / __ \/ __/ _ \/ __  / 
+/ /___/ /_/ / /_/ / / / / /_/  __/ /_/ /  
+\____/\____/\__,_/_/ /_/\__/\___/\__,_/   
+                </div>
             </div>
             
             <div class="input-container">
-                <span class="prompt glow">root@termux:~#</span>
+                <span class="prompt glow">cyber@root:~#</span>
                 <input type="text" class="input" id="commandInput" autofocus placeholder="Type commands here...">
             </div>
         </div>
     </div>
 
     <script>
-        // SAME INITIAL MATRIX + PARTICLES SETUP AS YOUR CODE
-        // Only edited runCommand()
-
+        // DOM elements
+        const terminal = document.getElementById('terminal');
+        const commandInput = document.getElementById('commandInput');
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const ctx = matrixCanvas.getContext('2d');
+        
+        // Set canvas sizes
+        function resizeCanvases() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvases);
+        resizeCanvases();
+        
+        // Enhanced Matrix effect
+        function initMatrix() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&()[]";
+            const fontSize = 14;
+            const columns = matrixCanvas.width / fontSize;
+            const drops = [];
+            
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * 100;
+            }
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+                
+                ctx.fillStyle = '#0f0';
+                ctx.font = `${fontSize}px monospace`;
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    
+                    drops[i]++;
+                }
+                
+                requestAnimationFrame(draw);
+            }
+            
+            draw();
+        }
+        
+        // Command functions
         function addOutput(text, className = '') {
             const output = document.createElement('div');
             output.className = `output ${className}`;
@@ -58,75 +327,251 @@
             terminal.appendChild(output);
             terminal.scrollTop = terminal.scrollHeight;
         }
-
+        
         function runCommand(cmd) {
-            addOutput(`<span class="prompt">root@termux:~#</span> ${cmd}`, 'glow');
-
+            addOutput(`<span class="prompt">cyber@root:~#</span> ${cmd}`, 'glow');
+            
             switch(cmd.toLowerCase()) {
                 case 'help':
                     addOutput('Available commands:', 'info');
                     addOutput('matrix - Start matrix simulation', 'success');
                     addOutput('hack - Simulate hacking process', 'success');
-                    addOutput('fun - Play fun mini games', 'success');
-                    addOutput('crypto - Show crypto prices', 'success');
-                    addOutput('scan - Simulate network scan', 'success');
+                    addOutput('quantum - Quantum cryptography simulation', 'success');
+                    addOutput('ai - AI neural network simulation', 'success');
+                    addOutput('attack - Simulate cyber attack', 'success');
                     addOutput('clear - Clear terminal', 'success');
                     break;
                     
-                case 'matrix': runMatrix(); break;
-                case 'hack': runHack(); break;
-                case 'fun': funMode(); break;
-                case 'crypto': showCrypto(); break;
-                case 'scan': networkScan(); break;
-                case 'clear': clearTerminal(); break;
-
+                case 'matrix':
+                    addOutput('Initializing Matrix simulation...', 'success');
+                    startMatrix();
+                    break;
+                    
+                case 'hack':
+                    simulateHack();
+                    break;
+                    
+                case 'quantum':
+                    quantumCrypt();
+                    break;
+                    
+                case 'ai':
+                    aiSimulation();
+                    break;
+                    
+                case 'attack':
+                    cyberAttack();
+                    break;
+                    
+                case 'clear':
+                    clearTerminal();
+                    break;
+                    
                 default:
                     addOutput(`Command not found: ${cmd}`, 'error');
                     addOutput('Type "help" for available commands', 'warning');
             }
         }
-
-        // 🎮 Fun Mode Games
-        function funMode() {
-            addOutput('=== FUN MODE ACTIVATED 🎮 ===', 'special');
-            const games = [
-                () => {
-                    const choices = ['Rock', 'Paper', 'Scissors'];
-                    const user = choices[Math.floor(Math.random() * 3)];
-                    const ai = choices[Math.floor(Math.random() * 3)];
-                    addOutput(`You: ${user} | AI: ${ai}`, 'info');
-                    if (user === ai) addOutput('Result: Draw!', 'warning');
-                    else if (
-                        (user === 'Rock' && ai === 'Scissors') ||
-                        (user === 'Paper' && ai === 'Rock') ||
-                        (user === 'Scissors' && ai === 'Paper')
-                    ) addOutput('You Win! 🎉', 'success');
-                    else addOutput('You Lose! 💀', 'error');
-                },
-                () => {
-                    const roll = Math.floor(Math.random() * 6) + 1;
-                    addOutput(`🎲 You rolled a ${roll}`, 'info');
-                },
-                () => {
-                    const secret = Math.floor(Math.random() * 10) + 1;
-                    addOutput(`🤔 Guess a number 1-10... Secret was ${secret}`, 'info');
-                }
-            ];
-            const randomGame = games[Math.floor(Math.random() * games.length)];
-            randomGame();
-            addOutput('===============================', 'special');
+        
+        // Effects
+        function startMatrix() {
+            addOutput('Matrix effect started.', 'info');
         }
-
-        // Rest of your hack, crypto, scan, clear functions remain SAME
-        // ...
-
+        
+        function simulateHack() {
+            addOutput('Initiating hack sequence...', 'warning');
+            
+            const targets = [
+                'MAINFRAME CORE',
+                'SECURITY PROTOCOLS',
+                'DATA ENCRYPTION',
+                'FIREWALL SYSTEMS',
+                'NETWORK GATEWAY'
+            ];
+            
+            targets.forEach((target, i) => {
+                setTimeout(() => {
+                    addOutput(`[!] BREACHING ${target}...`, 'info');
+                    
+                    // Simulate progress bar
+                    let progress = '';
+                    const interval = setInterval(() => {
+                        progress += '#';
+                        const output = `[${progress.padEnd(20, ' ')}] ${progress.length * 5}%`;
+                        if (progress.length <= 20) {
+                            terminal.lastChild.innerHTML = output;
+                        } else {
+                            clearInterval(interval);
+                            addOutput(`[+] ${target} COMPROMISED!`, 'success');
+                        }
+                    }, 100);
+                }, i * 2500);
+            });
+        }
+        
+        function quantumCrypt() {
+            addOutput('INITIATING QUANTUM ENCRYPTION SEQUENCE...', 'cyber');
+            
+            // Simulate quantum encryption
+            const steps = [
+                'GENERATING QUANTUM KEY PAIRS',
+                'ENTANGLING PHOTONS',
+                'ESTABLISHING QUANTUM CHANNEL',
+                'VERIFYING QUANTUM SIGNATURES',
+                'ACTIVATING QUANTUM RESISTANT ALGORITHMS'
+            ];
+            
+            steps.forEach((step, i) => {
+                setTimeout(() => {
+                    addOutput(`[+] ${step}...`, 'info');
+                    
+                    if (i === steps.length - 1) {
+                        setTimeout(() => {
+                            addOutput('[!] QUANTUM ENCRYPTION SUCCESSFUL', 'success');
+                            addOutput('[!] COMMUNICATION SECURE', 'success');
+                        }, 1000);
+                    }
+                }, i * 1500);
+            });
+        }
+        
+        function aiSimulation() {
+            addOutput('ACTIVATING NEURAL NETWORK...', 'cyber');
+            
+            // Simulate AI training
+            const iterations = 10;
+            addOutput('TRAINING AI MODEL...', 'info');
+            
+            let i = 0;
+            const interval = setInterval(() => {
+                const accuracy = (i * 10 + Math.random() * 5).toFixed(2);
+                const loss = (50 - i * 5 + Math.random() * 3).toFixed(2);
+                
+                addOutput(`Epoch ${i+1}/${iterations} - Accuracy: ${accuracy}% - Loss: ${loss}`, 'info');
+                
+                i++;
+                if (i >= iterations) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        addOutput('[!] AI TRAINING COMPLETE', 'success');
+                        addOutput('[!] NEURAL NETWORK OPTIMIZED', 'success');
+                    }, 500);
+                }
+            }, 800);
+        }
+        
+        function cyberAttack() {
+            addOutput('INITIATING CYBER ATTACK PROTOCOL...', 'error');
+            
+            const attacks = [
+                'DEPLOYING DDoS BOTNET',
+                'INJECTING SQL PAYLOADS',
+                'EXPLOITING ZERO-DAY VULNERABILITIES',
+                'BRUTE FORCE ENCRYPTION',
+                'DEPLOYING RANSOMWARE'
+            ];
+            
+            attacks.forEach((attack, i) => {
+                setTimeout(() => {
+                    addOutput(`[!] ${attack}...`, 'error');
+                    
+                    if (i === attacks.length - 1) {
+                        setTimeout(() => {
+                            addOutput('[!] TARGET SYSTEMS COMPROMISED', 'error');
+                            addOutput('[! EXFILTRATING DATA...', 'error');
+                        }, 1000);
+                    }
+                }, i * 1500);
+            });
+        }
+        
+        function clearTerminal() {
+            terminal.innerHTML = '';
+            addOutput('Terminal cleared.', 'info');
+            addOutput('Type "help" for available commands', 'info');
+        }
+        
+        function closeTerminal() {
+            addOutput('Connection closed. Refresh page to restart.', 'error');
+            commandInput.disabled = true;
+        }
+        
+        function minimizeTerminal() {
+            addOutput('Terminal minimized. Click anywhere to restore.', 'warning');
+            document.querySelector('.container').style.transform = 'translateY(calc(100% - 40px))';
+            setTimeout(() => {
+                document.addEventListener('click', function restore() {
+                    document.querySelector('.container').style.transform = '';
+                    document.removeEventListener('click', restore);
+                });
+            }, 100);
+        }
+        
+        function maximizeTerminal() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen().catch(console.error);
+            }
+        }
+        
+        // Menu button functions
+        function runMatrix() {
+            addOutput('Matrix effect activated from menu', 'success');
+        }
+        
+        // Event listeners
         commandInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const cmd = this.value.trim();
                 this.value = '';
-                if (cmd) runCommand(cmd);
+                
+                if (cmd) {
+                    runCommand(cmd);
+                }
             }
         });
+        
+        // Initialize effects
+        initMatrix();
+        
+        // Welcome message
+        setTimeout(() => {
+            addOutput('System initialized. Type "help" for commands.', 'success');
+        }, 1000);
+        
+        // Focus input on click anywhere
+        document.addEventListener('click', function() {
+            commandInput.focus();
+        });
+        
+        // Add floating matrix characters
+        function createFloatingChars() {
+            setInterval(() => {
+                const char = document.createElement('div');
+                char.className = 'matrix-char';
+                char.textContent = String.fromCharCode(0x30A0 + Math.random() * 96);
+                char.style.left = Math.random() * 100 + 'vw';
+                char.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                char.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                document.body.appendChild(char);
+                
+                // Animate
+                let pos = -50;
+                const anim = setInterval(() => {
+                    pos += 2;
+                    char.style.top = pos + 'vh';
+                    
+                    if (pos > 100) {
+                        clearInterval(anim);
+                        document.body.removeChild(char);
+                    }
+                }, 50);
+            }, 100);
+        }
+        
+        createFloatingChars();
     </script>
 </body>
 </html>
